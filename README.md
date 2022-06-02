@@ -1559,6 +1559,13 @@ Para empezar, empezaremos con el mas popular, mysql.
     dest: /root/ansible-examples
 ```
 * git_config: Lee y escribe configuracion git
+```yml
+- name: Usar vim como editor
+  git_config:
+    name: core.editor
+    value: vim
+    scope: global
+```
 * github_hooks: Administra hooks de Github
 * github_keys: Administra claves de Github
 * github_release: Administra publicaciones de Github
@@ -1566,4 +1573,402 @@ Para empezar, empezaremos con el mas popular, mysql.
 * gitlab_project: Crea/Actualiza/Elimina proyectos de Gitlab
 * gitlab_user: Crea/Actualiza/Elimina usuarios de Gitlab
 * hg: Obtiene ficheros desde mercurial
+```yml
+- name: Obtener codigo
+  hg:
+    repo: "https://www.selenic.com/repo/hello-world"
+    dest: /root/hg/
+```
 * subversion: Obtiene ficheros desde subversion
+```yml
+- name: Obtener codigo
+  subversion:
+    repo: "https://develop.svn.wordpress.org/trunk/src/"
+    dest: /root/wordpress/
+```
+### Modulos Intra Web
+* apache2_mod_proxy: Establece o obtiene atributos de miembros de apache2.4
+* apache2_module: Habilita o deshabilita modulos de Apache2(y otros), deben ser Debian o Ubuntu
+```yml
+- name: Habilitar modulo wsgi
+  apache2_module:
+    name: wsgi
+    state: present
+```
+* deploy_helper: Administra algunos pasos para desplegar aplicacion
+* django_manage: Gestiona aplicaciones Django
+* ejabberd_user: Gestiona usuarios de Ejabber
+* htpasswd: Administra usuarios para autentifacion basica
+```yml
+- name: Instalar libreria passlib
+  apt: name=python_passlib state=present
+- name: Añadir usuario
+  htpasswd:
+    name: oforte
+    path: /var/www/html/.htpasswd
+    password: prueba123
+```
+* jboss: Despliega aplicaciones JBoss
+* jeakins_job: Administra trabajos de Jenkins
+* jeakins_plugin: Administra plugins de Jeakins
+* jira: Añade o modifica incidencias en Jira
+* letsencrypt: Crea certificados SSL usando LetsEncrypt
+* supervisorctl: Administra el estado de un programa o grupo usando supervisord
+```yml
+- name: Detener aplicacion
+  supervisorctl:
+    name: long_script
+    state: stopped
+```
+* taiga_issue: Crea o elimina incidencias en la plataforma tagging
+
+### Modulos Cloud
+* Amazon
+  * Cloudformation
+  * Cloudtrail
+  * DynamoDB
+  * ec2
+  * elasticache
+  * iam
+  * route53
+  * s3
+  * sns/sqs/sts
+* Atomic
+  * Host
+  * Image
+* Azure
+  * Network
+    * Interfaces
+    * Public IP
+    * Subnets
+    * Virtual Networks
+  * Resource groups
+  * Security groups
+  * Storage accounts
+  * Virtual machines
+```yml
+# IMPORTANTE
+- name: Crear maquina con Azure
+  pip: name=azure version="2.0.0rc5"
+  azure_rm_virtualmachine:
+    resource_group: Plexus
+    name: UserPlexus1
+    vm_size: Basic_A0
+    admin_username: Roger
+    admin_password: RogerAdmin123$
+    ssh_public_keys:
+      - path: /home/roger/.ssh/authorized_keys
+        key_data: ssh-rsa sdfjfhfsdgw423423424254+fsdfsdf%%///
+    image:
+      offer: Windows     
+```
+* Centurylink
+  * Alerts
+  * Firewall
+  * Load Balancer
+  * Servers
+  * Public IP
+* Cloudstack
+  * Account
+  * Firewall
+  * Host
+  * Network
+  * Roles
+  * Routes
+* Digital Ocean
+  * Block Storage
+  * Domain
+  * SSH Key
+  * Droplets
+  * Tags
+* Docker
+  * Contenedor
+  * Imagenes
+  * Network
+  * Servicios
+```yml
+- name: Conectar docker
+  pip: name=docker-py state=latest
+- name: Descargar imagen
+  docker_image:
+    name: centos
+    state: present
+- name: Ejecutar contenedor
+  docker_container:
+    name: micontenedor
+    state: started
+    detach: True
+    interactive: True
+    image: centos
+```
+* Google
+  * Instancias
+  * Storage
+  * DNS
+  * Load Balancer
+  * Redes / Firewall
+  * Tags
+  * Backend Service
+```yml
+# Crear maquina virtual de google en europa, tamaño pequeño, con SO Debian, que este presente, y luego unos datos de autenticacion.
+- name: Crear maquina Google
+  gce:
+    instance_names: ansible_plexus
+    zone: europe-west1-b
+    machine_type: g1-small
+    image: debian-8
+    state: present
+    service_account_email: "roger@plexus.iam.gserviceaccount.com"
+    credentials_file: "plexus-passwords.json"
+    project_id: "proyectoPlexus-123"
+```
+* Openstack
+  * Auth
+  * Flavor
+  * Image
+  * Network
+  * Nova
+  * Project
+  * Instances
+  * Volumes
+  * Zone
+* VMWare
+  * VCA
+  * Cluster
+  * Datacenter
+  * vSwitchs
+  * VM
+  * vSAN
+  * Datastore
+
+### Modulos Virtualizacion
+* datadog_event: Enviar eventos a DataDog
+* datadog_monitor: Administra monitorizacion DataDog
+* logicmonitor: Administra la cuenta de LogicMonitor
+* logicmonitor_facts: Gestiona los facts de LogicMonitor
+* monit: Gestiona estado ed servicios con Monit
+* nagios: Realiza tareas comunes en Nagios
+* newrelic_deployment: Notifica sobre despliegue de aplicaciones en Newrelic
+* pagerduty: Crear ventanas de mantenimiento en PagerDuty
+* pagerduty_alert: Gestiona alertas en PagerDuty
+* sensu_check / sensu_subscription: Gestiona Sensu
+* zabbix_group: Crea / Elimina grupo de hosts
+* zabbix_host: Crea / Actualiza / Elimina hosts
+* zabbix_hostmacro: Gestiona macros
+* zabbix_maintenance: Crea ventanas de mante
+* zabbix_screen: Gestiona pantallas
+
+## Galaxy
+
+### Ansible Galaxy Introduccion
+Ansible Galaxy es un repositorio en linea, gratuito, donde se alojan roles a ser utilizados por nuestros playbooks.
+
+### Ansible Galaxy
+El comando ansible-galaxy permite realizar diversas tareas sobre los roles.
+
+* Sintaxis:
+```bash
+ansible-galaxy [accion] [opciones] argumentos
+```
+* Acciones:
+  * delete: Elimina un rol de la web de Galaxy
+  * import: Importa un rol desde Github a Galaxy
+  * info: Muestra informacion detallada de un rol
+  * init: Inicializa estructura directorio
+  * install: Descarga un rol
+  * list: Lista los roles instalados
+  * login: Autentifica en la web de Galaxy
+  * remove: Elimina rol del servidor pero NO de la web de Galaxy
+  * search: Hace una busqueda dentro del repo
+  * setup: Crea una integracion con Travis CI
+
+* Opciones:
+  * -f / --force: Sobreescribe el rol
+  * -i / --ignore-errors: Ignora errores
+  * -n / --no-deps: No instala dependecias
+  * -p / --roles-path: Directorio de roles "cambiar"
+  * -r / --roles-file: Fichero con lista de roles a instalar
+
+### Compartir Rol
+Los pasos para compartir un rol en Galaxy son los siguientes:
+1. Crear repositorio en GitHub
+2. Inicializar el rol con ansible-galaxy (Opcional pero RECOMENDADO)
+3. Editar meta/main.yml para especificar autor, descripcion, plataformas y etiquetas
+4. Publicar nuestro código (commit && push) a GitHub
+5. Iniciar sesión con ansible-galaxy login
+6. Importar rol: ansible-galaxy import github_usuario github_repositorio
+
+Para eliminar un rol de Galaxy:
+* ansible-galaxy delete github_usuario github_repositorio
+
+### Fichero Roles
+Es posible crear un fichero con el listado de roles a instalar. Los atributos que se pueden especificar (uno o mas) son los siguientes:
+* src: Origen del rol
+* scm: Especifica el tipo de SCM -> git o hg
+* version: Especifica un nombre distinto al original
+* name: Especifica un nombre distinto al original
+
+ansible-galaxy -r fichero.yml instalará todos los requerimientos.
+
+## Tower
+
+### Tower Introduccion
+Ansible tower es una solucion web para facilitar las tareas a todos los equipos IT.
+Los componentes son los siguientes:
+* Proyectos (Repositorio de playbooks) -> Local o SCM (git)
+* Inventarios (Estaticos o dinamicos)
+* Plantillas de trabajo (Definicion de playbook,inventario y diversas opciones)
+* Trabajos (Ejecucion de las plantillas)
+* Configuraciones (Credenciales,equipos,organizaciones,etc...)
+
+Ansible tower posee tres ediciones:
+* self_support: Sin soporte ni caracteristicas especiales (LDAP,System Tracking o cuestionarios)
+* standard: Con soporte 8x5 pero sin caracteristicas especiales
+* premium: Soporte 24x7 y caracteristicas especiales.
+
+Es gratuita la edicion self_support para 10 nodos o menos.
+
+Es posible solicitar una licencia de prueba de un mes para premium.
+
+### Tower Instalacion
+Requisitos:
+* Servidor especifico para tower (No compartir con otras aplicaciones)
+* Distribuciones soportadas: { Red Hat Enterprise Linux 7, CentOS 7, Ubuntu 14.04/16.04 }
+* Navegador Chrome o Firefox. Otros pueden funcionar pero no estan soportados.
+* Al menos 2GB de RAM (Recomendados 4GB)
+* Al menos 20 GB de disco, de los cuales 10GB deben ser dedicados a /var/
+* En el caso de RHEL/CentOS es necesario habilitar el repo EPEL
+
+Escenarios:
+* Un servidor con aplicacion y base de datos en el mismo servidor
+* Un servidor para la aplicacion y otro con instalacion de la base de datos PostgreSQL
+* Alta disponibilidad: Varios servidores con tower instalado con un servidor separado actuando como base de datos
+
+Pasos:
+
+* En RHEL/CentOS instalar EPEL
+* En ubuntu: apt install software-properties-common && apt-add-repository ppa:ansible/ansible
+
+Metodos de instalacion:
+* Instalacion normal: https://releases.ansible.com/ansible-tower/setup
+* Bundle: https://releases.ansible.com/ansible-tower/setup_bundle
+
+* Una vez descargado descomprimimos con ```tar -xvf ansible-tower-setup-[bundle]-latest.tar.gz``` y editamos el fichero inventory con los servidores y contraseñas.
+* Acceder a la web a partir de http://direccionip
+* Tambien es necesario acceder al puerto 8080 para los eventos en tiempo real.
+
+### Instalar Ansible AWX
+Instalar version Ansible AWX 17.1.0 sobre un Ubuntu 20.04 con 4GB RAM 2cpu. 
+* Dependecias:
+  * Docker
+  * Docker-compose
+  * Git
+
+Url del repo: https://github.com/ansible/awx/archive/refs/tags/17.1.0.tar.gz
+
+```
+$ cd installer
+
+$ ansible-playbook -i inventory install.yml
+```
+### Tower Elementos
+Los elementos principales al trabajar con tower son los siguientes:
+* Proyectos: Define donde los playbooks estan almacenados
+* Inventarios: Lista de servidores con los que trabajar
+
+### Tower Configuration
+Una vez instalado Ansible Tower es posible configurar los siguientes elementos:
+* Organizaciones: Agrupar contenido para administrar permisos de los siguientes departamentos
+* Usuarios: Permitir a usuarios el uso de tower
+* Equipos: Dividir una organizacion para asociar contenido y controlar permisos
+* Credenciales: Añadir contraseñas, claves, SSH... Para acceder a servidores, inventarios o proyectos
+* Trabajos de gestión: Gestionar trabajos administrativos
+* Scripts de inventario: En el caso de no tener integracion nativa a su inventario, es posible definir un script personalizado para obtener los servidores
+* Notificaciones: Crear plantillas para notificar el resultado de un trabajo
+* Licencia: Vre o modificar licencia
+* Configurar tower: Desde la autenticacion hasta el login
+
+### Tower Proyectos
+Un proyecto hace referencia a donde esta alojado los playbooks y todos los ficheros necesarios, pueden estar alojados en:
+* Local
+* SCM
+En caso de necesitar autentificarse, existen dos maneras de credenciales:
+* Clave SSH
+* Usuario/Contraseña
+
+### Tower Inventarios
+Un inventario contiene una lista de servidores (con sus atributos). Es posible crear grupos y pueden ser dinamicos.
+
+### Tower Credenciales
+Las credenciales permiten acceder a los distintos componentes. Los tipos son:
+* Maquina: Acceder a servidores {Clave SSH, Usuario/Clave, sudo}
+* Red: Acceder a dispositivos de red {Clave SSH, Usuario/Clave}
+* Control de versiones: Accede a SCM {Clave SSH, Usuario/Clave}
+* Proveedor: Para acceder al inventario {Usuario/Clave, Datos de acceso}
+
+### Tower Plantillas
+Una plantilla contiene la definicion de todos los elementos para ejecutar un playbook en los servidores del inventario especificado. Se define:
+* Nombre
+* Descripcion
+* Tipo de trabajo {Ejecutar,Comprobar,Escanear(sin playbook)}
+* Inventario
+* Proyecto
+* Playbook
+* Credencial
+* Límite (Filtro de servidores)
+* Verbosity
+* Tags
+* Opciones {Escalar privilegios,trabajos concurrentes, callback}
+* Labels
+* Variables extra
+
+
+### Ansible Debug
+El modulo debug nos ayuda a visualizar el contenido de variables o expresiones de las plantillas
+```yml
+- debug:
+    msg: "Cadena de texto a interpretar"
+- debug: var=nombreVariable
+```
+
+### Ansible Tags
+Las etiquetas (tags) nos permite especificar selectivamente que tareas se ejecutaran o se omitiran
+```yml
+- modulo: acciones
+  tags: etiqueta1
+```
+
+### Ansible Lookup
+La directiva lookup nos permite obtener datos desde el servidor que se esta ejecutando el playbook
+```yml
+"{{lookup("file","/etc/motd")}}"
+```
+
+### Ansible Vault
+El comando ansible-vault permite cifrar ficheros con una contraseña para proteger datos sensibles. La sintaxis es la siguiente:
+```yml
+ansible-vault create fichero.yml # Crea un fichero
+ansible-vault edit fichero.yml # Edita un fichero
+ansible-vault encrypt fichero.yml # Cifra un fichero
+ansible-vault decrypt fichero.yml # Descifra un fichero
+ansible-vault view fichero.yml # Ver un fichero
+ansible-playbook --ask-vault-pass or --vault-password-file #Pregunta o introduces fichero para cifrar
+```
+### Ansible Tareas Asincronas
+Cuando realizamos una tarea en un servidor a  traves de un modulo, la conexion permanece abierta esperando su finalizacion. Ansible nos da la opcion de realizarla en segundo plano y consultar el estado periodicamente.
+```yml
+#Metodo 1
+- modulo: arguments
+  async: Tiempomax
+  poll: Tiempo cons
+#Metodo 2
+- modulo: arguments
+  async: Tiempomax
+  poll: 0
+  register: tarea_async
+- debug: msg="Otra Tarea" 
+- async_stuts: jid={{tarea_async.ansible_job_id}}
+  register: estado
+  until: estado.finished
+  retries: 30
+```
